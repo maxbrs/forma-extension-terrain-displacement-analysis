@@ -62,9 +62,7 @@ export default function App() {
       <button onClick={saveSettings} style="width: 100%">
         Save settings
       </button>
-      <CalculateAndStore
-        threshold={projectSettings.steepnessThreshold}
-      />
+      <CalculateAndStore threshold={projectSettings.steepnessThreshold} />
       {/*<FromTerrainBuffer*/}
       {/*  steepnessThreshold={projectSettings.steepnessThreshold}*/}
       {/*/>*/}

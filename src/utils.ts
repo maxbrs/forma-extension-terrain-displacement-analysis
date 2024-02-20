@@ -37,9 +37,8 @@ const colors = [
   "rgba(137, 255, 111, 0.9)",
   "rgba(112, 255, 87, 0.9)",
   "rgba(79, 255, 59, 0.9)",
-  "rgba(0, 255, 0, 0.9)"
-]
-
+  "rgba(0, 255, 0, 0.9)",
+];
 
 export function createCanvas(
   array: Float32Array,
@@ -54,20 +53,27 @@ export function createCanvas(
 
   if (minElevation === maxElevation) {
     // if the min and max elevation are the same, the canvas will be all white
-    console.log({minElevation, maxElevation})
-    return canvas
+    console.log({ minElevation, maxElevation });
+    return canvas;
   }
 
   const ctx = canvas.getContext("2d");
   // const colorGrading = threshold / colors.length;
-  const highestDiff = Math.max(0, Math.abs(minElevation), Math.abs(maxElevation))
-  console.log({minElevation, maxElevation, highestDiff})
+  const highestDiff = Math.max(
+    0,
+    Math.abs(minElevation),
+    Math.abs(maxElevation),
+  );
+  console.log({ minElevation, maxElevation, highestDiff });
   // [x * diffX + y]
   for (let i = 0; i < array.length; i++) {
     const x = Math.floor(i % width);
     const y = Math.floor(i / width);
 
-    const idx = Math.floor((array[i] - minElevation) / (maxElevation - minElevation) * colors.length)
+    const idx = Math.floor(
+      ((array[i] - minElevation) / (maxElevation - minElevation)) *
+        colors.length,
+    );
 
     // // get an index so that the color is white (10th) if the value is 0, and either green or red (1st or last) if the absolute value is the highest
     // const idx = Math.floor((array[i] + highestDiff) / (2 * highestDiff) * (colors.length - 1))
