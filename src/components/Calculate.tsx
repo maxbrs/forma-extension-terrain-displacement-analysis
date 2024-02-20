@@ -1,9 +1,4 @@
 import * as THREE from "three";
-import {
-  computeBoundsTree,
-  disposeBoundsTree,
-  acceleratedRaycast,
-} from "three-mesh-bvh";
 import { createCanvas } from "../utils";
 import { useCallback } from "preact/hooks";
 import { Forma } from "forma-embedded-view-sdk/auto";
@@ -11,6 +6,7 @@ import { CANVAS_NAME, SCALE } from "../app";
 import { saveCanvas, saveFloatArray } from "../services/storage";
 import { Mesh } from "three";
 import { cartesian } from "../utils/misc.ts";
+// @ts-ignore
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 type Props = {
@@ -33,18 +29,6 @@ function getMinMax(array: Float32Array) {
   );
 }
 
-// Speed up raycasting using https://github.com/gkjohnson/three-mesh-bvh
-// @ts-ignore
-THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
-// @ts-ignore
-THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
-// @ts-ignore
-THREE.Mesh.prototype.raycast = acceleratedRaycast;
-const raycaster = new THREE.Raycaster();
-// For this analysis we only need the first hit, which is faster to compute
-// @ts-ignore
-raycaster.firstHitOnly = true;
-
 async function getTerrainUrn() {
   const [terrainUrn] = await Forma.geometry.getPathsByCategory({
     category: "terrain",
@@ -55,21 +39,25 @@ async function getTerrainUrn() {
 async function loadTerrainTriangles(
   terrainUrn: string | undefined,
 ): Promise<Float32Array> {
-  // debugger;
+  // debugger
   if (!terrainUrn) {
     const terrainUrn = await getTerrainUrn();
-    return await Forma.geometry.getTriangles({ path: terrainUrn });
+    const result = await Forma.geometry.getTriangles({ path: terrainUrn });
+    console.log("noURN", { terrainUrn, result }, result.length / 3);
+    return result;
   } else {
     const { element } = await Forma.elements.get({ urn: terrainUrn });
     const volume = await Forma.elements.representations.volumeMesh(element);
-
     const loader = new GLTFLoader();
     const gltf = await loader.parseAsync(volume?.data, "");
-    return new Float32Array(
-      gltf.scene.children[0].geometry.attributes.position.array,
-    );
-    // console.log({gltf})
-    // return new Float32Array(gltf.scene.children)
+    const arrayTriangles =
+      gltf.scene.children[0].type === "Mesh"
+        ? gltf.scene.children[0].geometry.attributes.position.array
+        : gltf.scene.children[0].children[0].geometry.attributes.position.array;
+    return new Float32Array(arrayTriangles);
+    // const result = new Float32Array(volume?.data)
+    // console.log("URN", { terrainUrn, result }, result.length / 3)
+    // return result
   }
 }
 
@@ -101,6 +89,7 @@ async function computeElevationDiff(
   oldMesh: Mesh,
   newMesh: Mesh,
 ): Promise<[string, number]> {
+  // TODO : temporary test
   if (oldMesh === newMesh) {
     return [`${x}, ${y}`, 0];
   }
@@ -126,9 +115,9 @@ export default function CalculateAndStore({ threshold }: Props) {
   const calculateTerrainSteepness = useCallback(async () => {
     // TODO : load urn from `input.json`
     const newTerrainUrn =
-      "urn:adsk-forma-elements:terrain:pro_bteceqejok:db4ff4fa-576a-4958-a635-18323ae008ad:1707828293795";
+      "urn:adsk-forma-elements:terrain:pro_awoiewcmej:c8f329d6-10e9-4cd5-b354-12a0348dd98f:1708431903261";
     const oldTerrainUrn =
-      "urn:adsk-forma-elements:terrain:pro_bteceqejok:db4ff4fa-576a-4958-a635-18323ae008ad:1689843466308";
+      "urn:adsk-forma-elements:terrain:pro_awoiewcmej:c8f329d6-10e9-4cd5-b354-12a0348dd98f:1697620352585";
 
     const [newTerrain, oldTerrain] = await Promise.all([
       loadTerrain(newTerrainUrn),
