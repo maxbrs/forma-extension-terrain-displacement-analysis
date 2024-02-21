@@ -13,7 +13,7 @@ const DEFAULT_SETTINGS: Settings = {
 
 export const SCALE = 5;
 
-export const CANVAS_NAME = "terrain slope";
+export const CANVAS_NAME = "terrain displacement";
 
 export default function App() {
   const [projectSettings, setProjectSettings] = useState<Settings>();
@@ -42,7 +42,7 @@ export default function App() {
 
   return (
     <>
-      <h2>Mass displacement analysis</h2>
+      <h2>Terrain Mass Displacement analysis</h2>
       <div class="section">
         <p>Calculate and visualize terrain mass displacement</p>
       </div>
@@ -70,6 +70,7 @@ export default function App() {
       <button onClick={removeTerrainSlope} style="width: 100%">
         Remove terrain slope drawing
       </button>
+      {/*<canvas id={"identifier"} height={500} width={500}></canvas>*/}
     </>
   );
 }

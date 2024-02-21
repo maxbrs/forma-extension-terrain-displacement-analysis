@@ -64,7 +64,7 @@ export function createCanvas(
     Math.abs(minElevation),
     Math.abs(maxElevation),
   );
-  console.log({ minElevation, maxElevation, highestDiff });
+  console.log({ minElevation, maxElevation, highestDiff, array });
   // [x * diffX + y]
   for (let i = 0; i < array.length; i++) {
     const x = Math.floor(i % width);
@@ -77,7 +77,6 @@ export function createCanvas(
 
     // // get an index so that the color is white (10th) if the value is 0, and either green or red (1st or last) if the absolute value is the highest
     // const idx = Math.floor((array[i] + highestDiff) / (2 * highestDiff) * (colors.length - 1))
-
     ctx!.fillStyle = colors[idx];
     ctx!.fillRect(x, height - y, 1, 1);
   }
