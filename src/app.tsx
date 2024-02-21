@@ -1,7 +1,7 @@
 import { Forma } from "forma-embedded-view-sdk/auto";
 import { useCallback, useEffect, useState } from "preact/hooks";
 import CalculateAndStore from "./components/Calculate";
-import { getJSONObject, saveJSONObject } from "./services/storage";
+import { getJSONObject, saveJSONObject } from "./services/Storage.ts";
 
 type Settings = {
   steepnessThreshold: number;
