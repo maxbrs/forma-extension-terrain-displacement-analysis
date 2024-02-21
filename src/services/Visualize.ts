@@ -52,7 +52,9 @@ export function createCanvas(
     const x = Math.floor(i % width);
     const y = Math.floor(i / width);
 
-    const idx = Math.floor(((array[i] + highestDiff) / (highestDiff * 2)) * colors.length);
+    const idx = Math.floor(
+      ((array[i] + highestDiff) / (highestDiff * 2)) * colors.length,
+    );
 
     ctx!.fillStyle = colors[idx];
     ctx!.fillRect(x, height - y, 1, 1);

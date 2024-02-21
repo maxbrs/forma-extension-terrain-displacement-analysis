@@ -9,11 +9,11 @@ import { useCallback } from "preact/hooks";
 import { Forma } from "forma-embedded-view-sdk/auto";
 import { CANVAS_NAME, SCALE } from "../app";
 import { saveCanvas, saveFloatArray } from "../services/Storage.ts";
-import {Group, Mesh} from "three";
+import { Group, Mesh } from "three";
 import { cartesian } from "../utils/misc.ts";
 // @ts-ignore
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import {rotationMatrixYUpToZUp} from "./Download.tsx";
+import { rotationMatrixYUpToZUp } from "./Download.tsx";
 
 type Props = {
   threshold: number;
@@ -31,35 +31,32 @@ const raycaster = new THREE.Raycaster();
 // @ts-ignore
 raycaster.firstHitOnly = true;
 
-async function loadTerrain(
-  terrainUrn: string,
-): Promise<Group | undefined> {
+async function loadTerrain(terrainUrn: string): Promise<Group | undefined> {
   const { element } = await Forma.elements.get({ urn: terrainUrn });
   const volume = await Forma.elements.representations.volumeMesh(element);
   const loader = new GLTFLoader();
   const gltf = await loader.parseAsync(volume?.data, "");
-  gltf.scene.applyMatrix4(rotationMatrixYUpToZUp())
-  gltf.scene.updateMatrixWorld()
+  gltf.scene.applyMatrix4(rotationMatrixYUpToZUp());
+  gltf.scene.updateMatrixWorld();
   const material = new THREE.MeshBasicMaterial();
   material.side = THREE.DoubleSide;
 
   gltf.scene.traverse((o: any) => {
     if (o instanceof Mesh) {
-      o.name = "analyzedMesh"
-      o.geometry.computeVertexNormals()
-      o.receiveShadow = true
-      o.castShadow = false
-      o.material = material
+      o.name = "analyzedMesh";
+      o.geometry.computeVertexNormals();
+      o.receiveShadow = true;
+      o.castShadow = false;
+      o.material = material;
 
-      o.geometry.computeBoundsTree = computeBoundsTree
-      o.geometry.disposeBoundsTree = disposeBoundsTree
-      o.geometry.computeBoundsTree()
-      o.raycast = acceleratedRaycast
+      o.geometry.computeBoundsTree = computeBoundsTree;
+      o.geometry.disposeBoundsTree = disposeBoundsTree;
+      o.geometry.computeBoundsTree();
+      o.raycast = acceleratedRaycast;
     }
-  })
-  return gltf.scene
+  });
+  return gltf.scene;
 }
-
 
 async function computeElevationDiff(
   x: number,
@@ -72,9 +69,12 @@ async function computeElevationDiff(
   const direction = new THREE.Vector3(0, 0, -1);
   let raycaster = new THREE.Raycaster();
   raycaster.set(origin, direction);
-  const oldIntersection = raycaster.intersectObjects(oldMesh.children)[0]
-  const newIntersection = raycaster.intersectObjects(newMesh.children)[0]
-  return [`${x}, ${y}`, newIntersection?.point.z - oldIntersection?.point.z || NaN];
+  const oldIntersection = raycaster.intersectObjects(oldMesh.children)[0];
+  const newIntersection = raycaster.intersectObjects(newMesh.children)[0];
+  return [
+    `${x}, ${y}`,
+    newIntersection?.point.z - oldIntersection?.point.z || NaN,
+  ];
 }
 
 export default function CalculateAndStore({ threshold }: Props) {
@@ -94,7 +94,7 @@ export default function CalculateAndStore({ threshold }: Props) {
       return;
     }
 
-    const bBox = new THREE.Box3().setFromObject(newTerrain)
+    const bBox = new THREE.Box3().setFromObject(newTerrain);
 
     const diffX = Math.floor((bBox.max.x - bBox.min.x) / SCALE);
     const diffY = Math.floor((bBox.max.y - bBox.min.y) / SCALE);
@@ -108,20 +108,20 @@ export default function CalculateAndStore({ threshold }: Props) {
     );
 
     if (newTerrain.children === oldTerrain.children) {
-      console.log("The meshes are identical, no need to compute elevation diff")
+      console.log(
+        "The meshes are identical, no need to compute elevation diff",
+      );
       return;
     }
-    console.log("start computing elevation diff")
+    console.log("start computing elevation diff");
     const fetchPromises = [];
     for (const [x, y] of cartesian(coordsX, coordsY)) {
-      fetchPromises.push(
-        computeElevationDiff(x, y, newTerrain, oldTerrain),
-      );
+      fetchPromises.push(computeElevationDiff(x, y, newTerrain, oldTerrain));
     }
     const result: { [k: string]: number } = Object.fromEntries(
       await Promise.all(fetchPromises),
-    )
-    console.log("Done with elevation diff")
+    );
+    console.log("Done with elevation diff");
 
     let elevationDiff = new Float32Array(diffX * diffY).fill(NaN);
     let minElevation = Number.POSITIVE_INFINITY;
@@ -144,7 +144,7 @@ export default function CalculateAndStore({ threshold }: Props) {
       diffX,
       diffY,
       minElevation,
-      maxElevation
+      maxElevation,
     );
 
     // need to find the reference point of the terrain to place the canvas
