@@ -7,7 +7,7 @@ import {
 import { createCanvas } from "../services/Visualize.ts";
 import { useCallback } from "preact/hooks";
 import { Forma } from "forma-embedded-view-sdk/auto";
-import { CANVAS_NAME, SCALE } from "../app";
+import { CANVAS_NAME, SCALE } from "../App.tsx";
 import { saveCanvas, saveFloatArray } from "../services/Storage.ts";
 import { Group, Mesh } from "three";
 import { cartesian } from "../utils/misc.ts";
@@ -16,7 +16,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { rotationMatrixYUpToZUp } from "./Download.tsx";
 
 type Props = {
-  threshold: number;
+  oldTerrainUrn: string;
+  newTerrainUrn: string;
 };
 
 // Speed up raycasting using https://github.com/gkjohnson/three-mesh-bvh
@@ -63,9 +64,9 @@ async function computeElevationDiff(
   y: number,
   newMesh: Group,
   oldMesh: Group,
+  maxHeight: number | undefined,
 ): Promise<[string, number]> {
-  // TODO : temporary test
-  const origin = new THREE.Vector3(x, y, 10000);
+  const origin = new THREE.Vector3(x, y, maxHeight ? maxHeight + 10 : 10000);
   const direction = new THREE.Vector3(0, 0, -1);
   let raycaster = new THREE.Raycaster();
   raycaster.set(origin, direction);
@@ -77,14 +78,8 @@ async function computeElevationDiff(
   ];
 }
 
-export default function CalculateAndStore({ threshold }: Props) {
+export default function CalculateAndStore({ oldTerrainUrn, newTerrainUrn }: Props) {
   const calculateTerrainSteepness = useCallback(async () => {
-    // TODO : load urn from `input.json`
-    const newTerrainUrn =
-      "urn:adsk-forma-elements:terrain:pro_awoiewcmej:c8f329d6-10e9-4cd5-b354-12a0348dd98f:1708431903261";
-    const oldTerrainUrn =
-      "urn:adsk-forma-elements:terrain:pro_awoiewcmej:c8f329d6-10e9-4cd5-b354-12a0348dd98f:1697620352585";
-
     const [newTerrain, oldTerrain] = await Promise.all([
       loadTerrain(newTerrainUrn),
       loadTerrain(oldTerrainUrn),
@@ -116,7 +111,7 @@ export default function CalculateAndStore({ threshold }: Props) {
     console.log("start computing elevation diff");
     const fetchPromises = [];
     for (const [x, y] of cartesian(coordsX, coordsY)) {
-      fetchPromises.push(computeElevationDiff(x, y, newTerrain, oldTerrain));
+      fetchPromises.push(computeElevationDiff(x, y, newTerrain, oldTerrain, bBox.max.z));
     }
     const result: { [k: string]: number } = Object.fromEntries(
       await Promise.all(fetchPromises),
@@ -162,7 +157,6 @@ export default function CalculateAndStore({ threshold }: Props) {
       scale: { x: SCALE, y: SCALE },
     });
     await saveCanvas("terrain-steepness-png", canvas, {
-      steepnessThreshold: threshold,
       minX: bBox.min.x,
       maxX: bBox.max.x,
       minY: bBox.min.y,
@@ -178,7 +172,7 @@ export default function CalculateAndStore({ threshold }: Props) {
       minY: bBox.min.y,
       maxY: bBox.max.y,
     });
-  }, [threshold]);
+  }, [oldTerrainUrn, newTerrainUrn]);
 
   return (
     <button onClick={calculateTerrainSteepness} style="width: 100%;">

@@ -4,11 +4,13 @@ import CalculateAndStore from "./components/Calculate";
 import { getJSONObject, saveJSONObject } from "./services/Storage.ts";
 
 type Settings = {
-  steepnessThreshold: number;
+  oldTerrainUrn: string;
+  newTerrainUrn: string;
 };
 
 const DEFAULT_SETTINGS: Settings = {
-  steepnessThreshold: 5,
+  oldTerrainUrn: "",
+  newTerrainUrn: "",
 };
 
 export const SCALE = 5;
@@ -42,35 +44,45 @@ export default function App() {
 
   return (
     <>
-      <h2>Terrain Mass Displacement analysis</h2>
-      <div class="section">
+      <h2 style="margin-top: 15px">Terrain Mass Displacement analysis</h2>
+      <div className="section">
         <p>Calculate and visualize terrain mass displacement</p>
       </div>
-      <div class="section">
-        <p>Steepness Threshold</p>
+
+      <p>Add URNs of terrains to compare</p>
+      <div className="section">
+        <p>Initial terrain</p>
         <input
-          type="number"
-          value={projectSettings.steepnessThreshold}
+          type="string"
+          value={projectSettings.oldTerrainUrn}
           onChange={(e) =>
             setProjectSettings({
               ...projectSettings,
-              steepnessThreshold: parseInt(e.currentTarget.value),
+              oldTerrainUrn: e.currentTarget.value,
+            })
+          }
+        />
+      </div>
+      <div className="section">
+        <p>Alternative terrain</p>
+        <input
+          type="string"
+          value={projectSettings.newTerrainUrn}
+          onChange={(e) =>
+            setProjectSettings({
+              ...projectSettings,
+              newTerrainUrn: e.currentTarget.value,
             })
           }
         />
       </div>
       <button onClick={saveSettings} style="width: 100%">
-        Save settings
+        Save inputs
       </button>
-      <CalculateAndStore threshold={projectSettings.steepnessThreshold} />
-      {/*<FromTerrainBuffer*/}
-      {/*  steepnessThreshold={projectSettings.steepnessThreshold}*/}
-      {/*/>*/}
-      {/*<FromSavedPng steepnessThreshold={projectSettings.steepnessThreshold} />*/}
+      <CalculateAndStore oldTerrainUrn={projectSettings.oldTerrainUrn} newTerrainUrn={projectSettings.newTerrainUrn} />
       <button onClick={removeTerrainSlope} style="width: 100%">
         Remove terrain slope drawing
       </button>
-      {/*<canvas id={"identifier"} height={500} width={500}></canvas>*/}
     </>
   );
 }
