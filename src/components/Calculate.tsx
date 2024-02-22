@@ -122,10 +122,9 @@ export default function CalculateAndStore({ oldTerrainUrn, newTerrainUrn }: Prop
     let minElevation = Number.POSITIVE_INFINITY;
     let maxElevation = Number.NEGATIVE_INFINITY;
     for (let i = 0; i < diffX; i++) {
-      // bBox.minX + i * SCALE
-      const coordY = bBox.min.y + SCALE + SCALE * i;
+      const coordY = bBox.min.y + SCALE * i;
       for (let j = 0; j < diffY; j++) {
-        const coordX = bBox.min.x + SCALE + SCALE * j;
+        const coordX = bBox.min.x + SCALE * j;
         const delta = result[`${coordX}, ${coordY}`];
         elevationDiff[i * diffX + j] = delta;
         if (delta || delta === 0) {
@@ -134,6 +133,7 @@ export default function CalculateAndStore({ oldTerrainUrn, newTerrainUrn }: Prop
         }
       }
     }
+
     const canvas = createCanvas(
       elevationDiff,
       diffX,
