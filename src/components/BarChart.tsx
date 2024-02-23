@@ -3,8 +3,11 @@ import { ElevationDataType } from "../state/application-state.ts";
 import { useMemo } from "preact/hooks";
 import { colors } from "../services/Visualize.ts";
 
+type ChartType = "hist" | "diff";
+
 interface BarChartProps {
   data: ElevationDataType | undefined;
+  type: ChartType;
   showPercent?: boolean;
 }
 
@@ -42,37 +45,45 @@ function removeConsecutiveZeros(
 function restructureData(data: {
   array: Float32Array;
   bins: number[][];
-}): { index: string; [key: number]: number }[] | undefined {
-  const array = data.array.filter((x) => Math.abs(x) > 0.5);
+}, type: ChartType): { index: string; [key: number]: number }[] | undefined {
+  let array = data.array;
+  let bins = data.bins;
+
+  if (type === "hist") {
+    // TODO
+    array = data.array.filter((x) => Math.abs(x) > 0.5);
+  } else {
+    bins = [[Number.NEGATIVE_INFINITY, 0], [0, Number.POSITIVE_INFINITY]];
+  }
+
   let result: { index: string; [key: number]: number }[] = [];
   // Assuming that the bins are sorted and non-overlapping
-  for (let i = 0; i < data.bins.length; i++) {
+  for (let i = 0; i < bins.length; i++) {
     let count = 0;
-    for (let j = 0; j < data.array.length; j++) {
-      if (data.bins[i][0] <= array[j] && array[j] < data.bins[i][1]) {
+    for (let j = 0; j < array.length; j++) {
+      if (bins[i][0] <= array[j] && array[j] < bins[i][1]) {
         count++;
       }
     }
-    const binAvg = Number((data.bins[i][0] + data.bins[i][1]) / 2).toFixed(0);
+    const binAvg = Number((bins[i][0] + bins[i][1]) / 2).toFixed(0);
     // const [start, end] = data.bins[i].map(num => Number(num.toFixed(1)));
     let obj = { index: `~ ${binAvg} m` };
     obj = { ...obj, [i]: count };
     result.push(obj);
   }
-  const filteredResult = removeConsecutiveZeros(result);
   if (!result || result.length === 0) {
     return;
   }
-  return filteredResult.reverse();
+  return removeConsecutiveZeros(result);
 }
 
-export function BarChart({ data }: BarChartProps) {
+export function BarChart({ data, type }: BarChartProps) {
   const updatedChartData = useMemo(() => {
     if (!data || data.array.length === 0) {
       return null;
     }
-    return restructureData(data);
-  }, [data]);
+    return restructureData(data, type)?.reverse();
+  }, [data, type]);
 
   const colorList = useMemo(() => {
     const colorList: string[] = [];
@@ -80,10 +91,8 @@ export function BarChart({ data }: BarChartProps) {
       const idx = Number(Object.keys(d).filter((key) => key !== "index")[0]);
       colorList.push(colors[idx]);
     });
-    return colorList;
+    return colorList.reverse();
   }, [updatedChartData]);
-
-  console.log({ updatedChartData, colorList });
 
   return (
     (updatedChartData && (
@@ -96,7 +105,7 @@ export function BarChart({ data }: BarChartProps) {
         padding={0.2}
         valueScale={{ type: "linear" }}
         indexScale={{ type: "band", round: true }}
-        colors={colorList.reverse()}
+        colors={type === "hist" ? colorList : [colors[0], colors[colors.length - 1]]}
         borderColor="black"
         borderWidth={0.25}
         axisTop={null}
