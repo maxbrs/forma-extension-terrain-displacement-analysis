@@ -66,13 +66,17 @@ export function BarChart({ data }: BarChartProps) {
     }
     return restructureData(data)
   }, [data])
-  console.log({updatedChartData})
 
-  const colorList: string[]  = []
-  updatedChartData?.forEach((d) => {
-    const idx = Number(Object.keys(d).filter(key => key !== "index")[0])
-    colorList.push(colors[idx])
-  })
+  const colorList = useMemo(() => {
+    const colorList: string[] = []
+    updatedChartData?.forEach((d) => {
+      const idx = Number(Object.keys(d).filter(key => key !== "index")[0])
+      colorList.push(colors[idx])
+    })
+    return colorList;
+  }, [updatedChartData])
+
+  console.log({ updatedChartData, colorList })
 
   return (
     (updatedChartData && (
@@ -87,6 +91,7 @@ export function BarChart({ data }: BarChartProps) {
         indexScale={{ type: 'band', round: true }}
         colors={colorList.reverse()}
         borderColor="black"
+        borderWidth={.25}
         axisTop={null}
         axisRight={null}
         axisBottom={{
