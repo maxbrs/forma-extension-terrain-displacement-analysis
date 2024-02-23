@@ -78,7 +78,10 @@ async function computeElevationDiff(
   ];
 }
 
-export default function CalculateAndStore({ oldTerrainUrn, newTerrainUrn }: Props) {
+export default function CalculateAndStore({
+  oldTerrainUrn,
+  newTerrainUrn,
+}: Props) {
   const calculateTerrainDifference = useCallback(async () => {
     const [newTerrain, oldTerrain] = await Promise.all([
       loadTerrain(newTerrainUrn),
@@ -111,7 +114,9 @@ export default function CalculateAndStore({ oldTerrainUrn, newTerrainUrn }: Prop
     console.log("start computing elevation diff");
     const fetchPromises = [];
     for (const [x, y] of cartesian(coordsX, coordsY)) {
-      fetchPromises.push(computeElevationDiff(x, y, newTerrain, oldTerrain, bBox.max.z));
+      fetchPromises.push(
+        computeElevationDiff(x, y, newTerrain, oldTerrain, bBox.max.z),
+      );
     }
     const result: { [k: string]: number } = Object.fromEntries(
       await Promise.all(fetchPromises),

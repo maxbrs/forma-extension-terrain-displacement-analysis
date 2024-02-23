@@ -2,8 +2,8 @@ import { Forma } from "forma-embedded-view-sdk/auto";
 import { useCallback, useEffect, useState } from "preact/hooks";
 import CalculateAndStore from "./components/Calculate";
 import { getJSONObject, saveJSONObject } from "./services/Storage.ts";
-import {BarChart} from "./components/BarChart.tsx";
-import {elevation} from "./state/application-state.ts";
+import { BarChart } from "./components/BarChart.tsx";
+import { elevation } from "./state/application-state.ts";
 
 type Settings = {
   oldTerrainUrn: string;
@@ -82,12 +82,15 @@ export default function App() {
       <button onClick={saveSettings} style="width: 100%">
         Save inputs
       </button>
-      <CalculateAndStore oldTerrainUrn={projectSettings.oldTerrainUrn} newTerrainUrn={projectSettings.newTerrainUrn}/>
+      <CalculateAndStore
+        oldTerrainUrn={projectSettings.oldTerrainUrn}
+        newTerrainUrn={projectSettings.newTerrainUrn}
+      />
       <button onClick={removeTerrainSlope} style="width: 100%">
         Remove terrain slope drawing
       </button>
-      <div style={{height: 400, border: 1}}>
-        <BarChart data={elevation.value}/>
+      <div style={{ height: 400, border: 1 }}>
+        <BarChart data={elevation.value} />
       </div>
     </>
   );

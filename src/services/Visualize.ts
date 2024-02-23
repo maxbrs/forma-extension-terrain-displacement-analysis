@@ -1,4 +1,4 @@
-import {elevation} from "../state/application-state.ts";
+import { elevation } from "../state/application-state.ts";
 
 export const colors = [
   "rgba(0, 255, 0, 1)",
@@ -24,7 +24,7 @@ export const colors = [
   "rgba(255, 0, 0, 1)",
 ];
 
-function getBins(nbBins: number, range: [number, number]): number[][]{
+function getBins(nbBins: number, range: [number, number]): number[][] {
   const binSize = (range[1] - range[0]) / nbBins;
 
   const bins = [];
@@ -36,7 +36,7 @@ function getBins(nbBins: number, range: [number, number]): number[][]{
 }
 
 function findIndexFromBin(value: number, bins: number[][]): number {
-  return bins.findIndex(([min, max]) => min <= value && value < max)
+  return bins.findIndex(([min, max]) => min <= value && value < max);
 }
 
 export function createCanvas(
