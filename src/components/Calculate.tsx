@@ -79,7 +79,7 @@ async function computeElevationDiff(
 }
 
 export default function CalculateAndStore({ oldTerrainUrn, newTerrainUrn }: Props) {
-  const calculateTerrainSteepness = useCallback(async () => {
+  const calculateTerrainDifference = useCallback(async () => {
     const [newTerrain, oldTerrain] = await Promise.all([
       loadTerrain(newTerrainUrn),
       loadTerrain(oldTerrainUrn),
@@ -175,7 +175,7 @@ export default function CalculateAndStore({ oldTerrainUrn, newTerrainUrn }: Prop
   }, [oldTerrainUrn, newTerrainUrn]);
 
   return (
-    <button onClick={calculateTerrainSteepness} style="width: 100%;">
+    <button onClick={calculateTerrainDifference} style="width: 100%;">
       Calculate and store results
     </button>
   );
