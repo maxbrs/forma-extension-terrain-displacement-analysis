@@ -2,6 +2,7 @@ import { ResponsiveBar } from "@nivo/bar";
 import { ElevationDataType } from "../state/application-state.ts";
 import { useMemo } from "preact/hooks";
 import { colors } from "../services/Visualize.ts";
+import {SCALE} from "../App.tsx";
 
 type ChartType = "hist" | "diff";
 
@@ -60,8 +61,8 @@ function restructureData(data: {
     }
     const binAvg = Number((bins[i][0] + bins[i][1]) / 2).toFixed(0);
     // const [start, end] = data.bins[i].map(num => Number(num.toFixed(1)));
-    let obj = { index: type === "hist" ? `~ ${binAvg} m` : i === 0 ? "< 0" : "> 0" };
-    obj = { ...obj, [i]: Math.round(count) };
+    let obj = { index: type === "hist" ? `~ ${binAvg} m` : i === 0 ? "to remove" : "to add" };
+    obj = { ...obj, [i]: Math.round(count * SCALE * SCALE) };
     result.push(obj);
   }
   if (!result || result.length === 0) {
@@ -108,7 +109,7 @@ export function BarChart({ data, type }: BarChartProps) {
           tickSize: 5,
           tickPadding: 5,
           tickRotation: type === "hist" ? 90 : 0,
-          legend: type === "hist" ? "Area" : "",
+          legend: type === "hist" ? "Area in m2" : "",
           legendPosition: "middle",
           legendOffset: 55,
         }}
@@ -116,7 +117,7 @@ export function BarChart({ data, type }: BarChartProps) {
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: type === "hist" ? "Elevation difference (m)" : "Volume (m3)",
+          legend: type === "hist" ? "Depth (m)" : "Volume (m3)",
           legendPosition: "middle",
           legendOffset: -65,
         }}
