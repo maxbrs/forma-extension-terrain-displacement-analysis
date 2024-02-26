@@ -12,6 +12,7 @@ Overview of the TODO :
 - [ ] Add inspect functionalities
 - [ ] Improve UI to input both terrains to compare (waiting on proposal dropdown from Forma's API)
 - [ ] Add a way to export the results
+- [ ] Add an alternative raycasting method not using the GPU for more accurate results
 
 Sources :
 - Forked from : https://github.com/spacemakerai/forma-extensions-samples (more precisely from the `terrain-slope` analysis
