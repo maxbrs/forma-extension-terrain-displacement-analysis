@@ -92,7 +92,7 @@ export default function App() {
       <div style={{ height: 400, border: 1 }}>
         <BarChart data={elevation.value} type={"hist"} />
       </div>
-      <div style={{ height: 200, border: 1 }}>
+      <div style={{ height: 300, border: 1 }}>
         <BarChart data={elevation.value} type={"diff"} />
       </div>
     </>

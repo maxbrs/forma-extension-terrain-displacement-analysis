@@ -46,15 +46,8 @@ function restructureData(data: {
   array: Float32Array;
   bins: number[][];
 }, type: ChartType): { index: string; [key: number]: number }[] | undefined {
-  let array = data.array;
-  let bins = data.bins;
-
-  if (type === "hist") {
-    // TODO
-    array = data.array.filter((x) => Math.abs(x) > 0.5);
-  } else {
-    bins = [[Number.NEGATIVE_INFINITY, 0], [0, Number.POSITIVE_INFINITY]];
-  }
+  const array = type === "hist" ? data.array.filter((x) => Math.abs(x) > 0.5) : data.array;
+  const bins = type === "hist" ? data.bins : [[Number.NEGATIVE_INFINITY, 0], [0, Number.POSITIVE_INFINITY]];
 
   let result: { index: string; [key: number]: number }[] = [];
   // Assuming that the bins are sorted and non-overlapping
@@ -62,13 +55,13 @@ function restructureData(data: {
     let count = 0;
     for (let j = 0; j < array.length; j++) {
       if (bins[i][0] <= array[j] && array[j] < bins[i][1]) {
-        count++;
+        type === "hist" ? count++ : count += array[j];
       }
     }
     const binAvg = Number((bins[i][0] + bins[i][1]) / 2).toFixed(0);
     // const [start, end] = data.bins[i].map(num => Number(num.toFixed(1)));
-    let obj = { index: `~ ${binAvg} m` };
-    obj = { ...obj, [i]: count };
+    let obj = { index: type === "hist" ? `~ ${binAvg} m` : i === 0 ? "< 0" : "> 0" };
+    obj = { ...obj, [i]: Math.round(count) };
     result.push(obj);
   }
   if (!result || result.length === 0) {
@@ -80,9 +73,10 @@ function restructureData(data: {
 export function BarChart({ data, type }: BarChartProps) {
   const updatedChartData = useMemo(() => {
     if (!data || data.array.length === 0) {
-      return null;
+      return;
     }
-    return restructureData(data, type)?.reverse();
+    const restructuredData = restructureData(data, type)
+    return type === "hist" ?  restructuredData?.reverse() : restructuredData;
   }, [data, type]);
 
   const colorList = useMemo(() => {
@@ -91,8 +85,8 @@ export function BarChart({ data, type }: BarChartProps) {
       const idx = Number(Object.keys(d).filter((key) => key !== "index")[0]);
       colorList.push(colors[idx]);
     });
-    return colorList.reverse();
-  }, [updatedChartData]);
+    return type === "hist" ? colorList?.reverse() : colorList;
+  }, [updatedChartData, type]);
 
   return (
     (updatedChartData && (
@@ -100,9 +94,9 @@ export function BarChart({ data, type }: BarChartProps) {
         data={updatedChartData}
         keys={[...Array(colors.length).keys()].map(String)}
         indexBy="index"
-        layout="horizontal"
+        layout={type === "hist" ? "horizontal" : "vertical"}
         margin={{ top: 50, right: 20, bottom: 60, left: 70 }}
-        padding={0.2}
+        padding={type === "hist" ? 0.2 : 0}
         valueScale={{ type: "linear" }}
         indexScale={{ type: "band", round: true }}
         colors={type === "hist" ? colorList : [colors[0], colors[colors.length - 1]]}
@@ -113,8 +107,8 @@ export function BarChart({ data, type }: BarChartProps) {
         axisBottom={{
           tickSize: 5,
           tickPadding: 5,
-          tickRotation: 90,
-          legend: "Area",
+          tickRotation: type === "hist" ? 90 : 0,
+          legend: type === "hist" ? "Area" : "",
           legendPosition: "middle",
           legendOffset: 55,
         }}
@@ -122,7 +116,7 @@ export function BarChart({ data, type }: BarChartProps) {
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: "Elevation difference (m)",
+          legend: type === "hist" ? "Elevation difference (m)" : "Volume (m3)",
           legendPosition: "middle",
           legendOffset: -65,
         }}
@@ -132,6 +126,6 @@ export function BarChart({ data, type }: BarChartProps) {
         legends={[]}
         animate={true}
       />
-    )) || <p>nothing to see here ...</p>
+    )) || null
   );
 }
