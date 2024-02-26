@@ -71,6 +71,8 @@ function restructureData(data: {
   return removeConsecutiveZeros(result);
 }
 
+const HISTCOLORIDX = 3;
+
 export function BarChart({ data, type }: BarChartProps) {
   const updatedChartData = useMemo(() => {
     if (!data || data.array.length === 0) {
@@ -100,7 +102,7 @@ export function BarChart({ data, type }: BarChartProps) {
         padding={type === "hist" ? 0.2 : 0}
         valueScale={{ type: "linear" }}
         indexScale={{ type: "band", round: true }}
-        colors={type === "hist" ? colorList : [colors[0], colors[colors.length - 1]]}
+        colors={type === "hist" ? colorList : [colors[HISTCOLORIDX], colors[colors.length - (1 + HISTCOLORIDX)]]}
         borderColor="black"
         borderWidth={0.25}
         axisTop={null}
