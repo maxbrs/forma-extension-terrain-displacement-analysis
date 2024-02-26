@@ -59,6 +59,8 @@ async function loadTerrain(terrainUrn: string): Promise<Group | undefined> {
   return gltf.scene;
 }
 
+const TERRAINBUFFER = 10;
+
 async function computeElevationDiff(
   x: number,
   y: number,
@@ -74,7 +76,7 @@ async function computeElevationDiff(
   const newIntersection = raycaster.intersectObjects(newMesh.children)[0];
   return [
     `${x}, ${y}`,
-    newIntersection?.point.z - oldIntersection?.point.z || NaN,
+    (newIntersection?.point.z - oldIntersection?.point.z) - TERRAINBUFFER || NaN,
   ];
 }
 
@@ -91,6 +93,9 @@ export default function CalculateAndStore({
       console.error("Failed to load terrain");
       return;
     }
+
+    // Add buffer to avoid Z-fighting and get better raycasting results
+    newTerrain.position.set(newTerrain.position.x, newTerrain.position.y, newTerrain.position.z + TERRAINBUFFER);
 
     const bBox = new THREE.Box3().setFromObject(newTerrain);
 
