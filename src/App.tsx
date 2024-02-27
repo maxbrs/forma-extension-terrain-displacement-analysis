@@ -6,6 +6,7 @@ import { BarChart } from "./components/BarChart.tsx";
 import {
   deltaMass,
   elevation,
+  inputScale,
   loadingData,
 } from "./state/application-state.ts";
 
@@ -18,8 +19,6 @@ const DEFAULT_SETTINGS: Settings = {
   oldTerrainUrn: "",
   newTerrainUrn: "",
 };
-
-export const SCALE = 2;
 
 export const CANVAS_NAME = "mass displacement";
 
@@ -54,7 +53,7 @@ export default function App() {
   return (
     <>
       <h2 style="margin-top: 15px">Mass Displacement Analysis</h2>
-      <h4>Add URNs of terrains to compare</h4>
+      <h3>Add URNs of terrains to compare</h3>
       <div className="section">
         <p>Initial terrain</p>
         <input
@@ -81,6 +80,20 @@ export default function App() {
           }
         />
       </div>
+      <div className="section">
+        <p>Sampling scale</p>
+        <>
+          <p>{inputScale.value}m</p>
+          <input
+            style={{ width: "50%" }}
+            type="range"
+            min="1"
+            max="10"
+            value={inputScale.value}
+            onChange={(e) => (inputScale.value = Number(e.currentTarget.value))}
+          />
+        </>
+      </div>
       <button onClick={saveSettings} style="width: 100%">
         Save inputs
       </button>
@@ -104,7 +117,7 @@ export default function App() {
       ) : (
         <>
           {deltaMass.value ? (
-            <p>Overall mass difference: {deltaMass.value > 0 ? "+" : null} {deltaMass.value} m3</p>
+            <p>Overall mass difference: {deltaMass.value > 0 ? "+" : null}{deltaMass.value} m3</p>
           ) : (
             <p>Calculate elevation difference to see mass displacement results.</p>
           )}

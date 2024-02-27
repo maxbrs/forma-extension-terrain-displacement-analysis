@@ -5,6 +5,7 @@ export type ElevationDataType = {
   bins: number[][];
 };
 
+export const inputScale = signal<number>(2);
 export const elevation = signal<ElevationDataType | undefined>(undefined);
 export const loadingData = signal<boolean>(false);
 export const deltaMass = signal<number | undefined>(undefined);

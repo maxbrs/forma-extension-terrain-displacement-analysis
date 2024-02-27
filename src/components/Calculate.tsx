@@ -7,14 +7,14 @@ import {
 import { createCanvas } from "../services/Visualize.ts";
 import { useCallback } from "preact/hooks";
 import { Forma } from "forma-embedded-view-sdk/auto";
-import { CANVAS_NAME, SCALE } from "../App.tsx";
+import { CANVAS_NAME } from "../App.tsx";
 import { saveCanvas, saveFloatArray } from "../services/Storage.ts";
 import { Group, Mesh } from "three";
 import { cartesian } from "../utils/misc.ts";
 // @ts-ignore
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { rotationMatrixYUpToZUp } from "./Download.tsx";
-import { elevation, loadingData } from "../state/application-state.ts";
+import {elevation, inputScale, loadingData} from "../state/application-state.ts";
 
 type Props = {
   oldTerrainUrn: string;
@@ -107,15 +107,15 @@ export default function CalculateAndStore({
 
     const bBox = new THREE.Box3().setFromObject(newTerrain);
 
-    const diffX = Math.floor((bBox.max.x - bBox.min.x) / SCALE);
-    const diffY = Math.floor((bBox.max.y - bBox.min.y) / SCALE);
+    const diffX = Math.floor((bBox.max.x - bBox.min.x) / inputScale.value);
+    const diffY = Math.floor((bBox.max.y - bBox.min.y) / inputScale.value);
     const coordsX = Array.from(
       { length: diffX },
-      (_, i) => bBox.min.x + i * SCALE,
+      (_, i) => bBox.min.x + i * inputScale.value,
     );
     const coordsY = Array.from(
       { length: diffY },
-      (_, i) => bBox.min.y + i * SCALE,
+      (_, i) => bBox.min.y + i * inputScale.value,
     );
 
     if (newTerrain.children === oldTerrain.children) {
@@ -142,9 +142,9 @@ export default function CalculateAndStore({
     let minElevation = Number.POSITIVE_INFINITY;
     let maxElevation = Number.NEGATIVE_INFINITY;
     for (let i = 0; i < diffX; i++) {
-      const coordY = bBox.min.y + SCALE * i;
+      const coordY = bBox.min.y + inputScale.value * i;
       for (let j = 0; j < diffY; j++) {
-        const coordX = bBox.min.x + SCALE * j;
+        const coordX = bBox.min.x + inputScale.value * j;
         const delta = result[`${coordX}, ${coordY}`];
         elevationDiff[i * diffX + j] = delta;
         if (delta || delta === 0) {
@@ -165,8 +165,8 @@ export default function CalculateAndStore({
     // need to find the reference point of the terrain to place the canvas
     // for this analysis, it's the middle of the terrain
     const position = {
-      x: bBox.min.x + (diffX * SCALE) / 2,
-      y: bBox.max.y - (diffY * SCALE) / 2,
+      x: bBox.min.x + (diffX * inputScale.value) / 2,
+      y: bBox.max.y - (diffY * inputScale.value) / 2,
       z: 29, // need to put the texture higher up than original
     };
 
@@ -174,7 +174,7 @@ export default function CalculateAndStore({
       name: CANVAS_NAME,
       canvas,
       position,
-      scale: { x: SCALE, y: SCALE },
+      scale: { x: inputScale.value, y: inputScale.value },
     });
     await saveCanvas("terrain-steepness-png", canvas, {
       minX: bBox.min.x,

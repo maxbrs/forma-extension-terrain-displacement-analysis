@@ -1,8 +1,7 @@
 import { ResponsiveBar } from "@nivo/bar";
-import { ElevationDataType } from "../state/application-state.ts";
+import {ElevationDataType, inputScale} from "../state/application-state.ts";
 import { useMemo } from "preact/hooks";
 import { colors } from "../services/Visualize.ts";
-import { SCALE } from "../App.tsx";
 
 type ChartType = "hist" | "diff";
 
@@ -75,7 +74,7 @@ function restructureData(
       index:
         type === "hist" ? `~ ${binAvg} m` : i === 0 ? "to remove" : "to add",
     };
-    obj = { ...obj, [i]: Math.round(count * SCALE * SCALE) };
+    obj = { ...obj, [i]: Math.round(count * inputScale.value ** 2) };
     result.push(obj);
   }
   if (!result || result.length === 0) {
@@ -106,11 +105,11 @@ export function BarChart({ data, type }: BarChartProps) {
 
   return (
     (updatedChartData && (
-      <div style={{ height: type === "hist" ? 400 : 200, border: 1 }}>
+      <div style={{ height: type === "hist" ? 300 : 200, border: 1 }}>
         {type === "hist" ? (
-          <h5>Distribution of terrain difference depth</h5>
+          <h4>Depth distribution</h4>
         ):(
-          <h5>Balance between mass to add and to remove</h5>
+          <h4>Mass balance</h4>
         )
         }
         <ResponsiveBar
@@ -118,7 +117,7 @@ export function BarChart({ data, type }: BarChartProps) {
           keys={[...Array(colors.length).keys()].map(String)}
           indexBy="index"
           layout={type === "hist" ? "horizontal" : "vertical"}
-          margin={{ top: 5, right: 20, bottom: type === "hist" ? 60 : 40, left: 70 }}
+          margin={{ top: 5, right: 20, bottom: 60, left: 70 }}
           padding={type === "hist" ? 0.2 : 0}
           valueScale={{ type: "linear" }}
           indexScale={{ type: "band", round: true }}
