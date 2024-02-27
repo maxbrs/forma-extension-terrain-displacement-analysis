@@ -111,7 +111,7 @@ export default function App() {
       >
         Remove terrain slope
       </button>
-      <h4>Elevation difference stats</h4>
+      <h3>Elevation difference stats</h3>
       {loadingData.value ? (
         <p>Calculations in progress, please wait ...</p>
       ) : (

@@ -42,8 +42,9 @@ export async function saveJSONObject(
   key: string,
   value: { [key: string]: any },
 ) {
+  const proposalId = await Forma.proposal.getId()
   await Forma.extensions.storage.setObject({
-    key,
+    key: `${key}_${proposalId}`,
     data: JSON.stringify(value),
   });
 }
@@ -53,8 +54,9 @@ export async function saveCanvas(
   canvas: HTMLCanvasElement,
   metadata?: { [key: string]: any },
 ) {
+  const proposalId = await Forma.proposal.getId()
   await Forma.extensions.storage.setObject({
-    key,
+    key: `${key}_${proposalId}`,
     data: canvas.toDataURL(),
     metadata: JSON.stringify(metadata),
   });
@@ -65,15 +67,17 @@ export async function saveFloatArray(
   arr: Float32Array,
   metadata?: { [key: string]: any },
 ) {
+  const proposalId = await Forma.proposal.getId()
   await Forma.extensions.storage.setObject({
-    key,
+    key: `${key}_${proposalId}`,
     data: arrayToBuffer(arr),
     metadata: JSON.stringify(metadata),
   });
 }
 
 export async function getJSONObject(key: string) {
-  const storageObject = await Forma.extensions.storage.getTextObject({ key });
+  const proposalId = await Forma.proposal.getId()
+  const storageObject = await Forma.extensions.storage.getTextObject({ key: `${key}_${proposalId}` });
   if (!storageObject) {
     return;
   }
@@ -87,7 +91,8 @@ export async function getJSONObject(key: string) {
 }
 
 export async function getCanvasObject(key: string) {
-  const storageObject = await Forma.extensions.storage.getTextObject({ key });
+  const proposalId = await Forma.proposal.getId()
+  const storageObject = await Forma.extensions.storage.getTextObject({ key: `${key}_${proposalId}` });
   if (!storageObject) {
     return;
   }
@@ -104,7 +109,8 @@ export async function getCanvasObject(key: string) {
 }
 
 export async function getFloat32Array(key: string) {
-  const storageObject = await Forma.extensions.storage.getBinaryObject({ key });
+  const proposalId = await Forma.proposal.getId()
+  const storageObject = await Forma.extensions.storage.getBinaryObject({ key: `${key}_${proposalId}` });
   if (!storageObject) {
     return;
   }
