@@ -14,6 +14,7 @@ import { cartesian } from "../utils/misc.ts";
 // @ts-ignore
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { rotationMatrixYUpToZUp } from "./Download.tsx";
+import { elevation, loadingData } from "../state/application-state.ts";
 
 type Props = {
   oldTerrainUrn: string;
@@ -76,7 +77,7 @@ async function computeElevationDiff(
   const newIntersection = raycaster.intersectObjects(newMesh.children)[0];
   return [
     `${x}, ${y}`,
-    (newIntersection?.point.z - oldIntersection?.point.z) - TERRAINBUFFER || NaN,
+    newIntersection?.point.z - oldIntersection?.point.z - TERRAINBUFFER || NaN,
   ];
 }
 
@@ -85,17 +86,24 @@ export default function CalculateAndStore({
   newTerrainUrn,
 }: Props) {
   const calculateTerrainDifference = useCallback(async () => {
+    loadingData.value = true;
     const [newTerrain, oldTerrain] = await Promise.all([
       loadTerrain(newTerrainUrn),
       loadTerrain(oldTerrainUrn),
     ]);
     if (!oldTerrain || !newTerrain) {
       console.error("Failed to load terrain");
+      loadingData.value = false;
+      elevation.value = undefined;
       return;
     }
 
     // Add buffer to avoid Z-fighting and get better raycasting results
-    newTerrain.position.set(newTerrain.position.x, newTerrain.position.y, newTerrain.position.z + TERRAINBUFFER);
+    newTerrain.position.set(
+      newTerrain.position.x,
+      newTerrain.position.y,
+      newTerrain.position.z + TERRAINBUFFER,
+    );
 
     const bBox = new THREE.Box3().setFromObject(newTerrain);
 
@@ -114,6 +122,8 @@ export default function CalculateAndStore({
       console.log(
         "The meshes are identical, no need to compute elevation diff",
       );
+      loadingData.value = false;
+      elevation.value = undefined;
       return;
     }
     console.log("start computing elevation diff");
@@ -185,8 +195,15 @@ export default function CalculateAndStore({
   }, [oldTerrainUrn, newTerrainUrn]);
 
   return (
-    <button onClick={calculateTerrainDifference} style="width: 100%;">
-      Calculate and store results
+    <button
+      onClick={calculateTerrainDifference}
+      style="width: 100%;"
+      disabled={loadingData.value}
+      onMouseOver={() =>
+        loadingData.value ? "Calculations in progress, please wait" : ""
+      }
+    >
+      Calculate elevation difference
     </button>
   );
 }

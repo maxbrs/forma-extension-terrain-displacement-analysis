@@ -1,4 +1,9 @@
-import { elevation } from "../state/application-state.ts";
+import {
+  deltaMass,
+  elevation,
+  loadingData,
+} from "../state/application-state.ts";
+import { SCALE } from "../App.tsx";
 
 export const colors = [
   "rgba(0, 255, 0, 1)",
@@ -65,9 +70,6 @@ export function createCanvas(
   );
 
   const bins = getBins(colors.length, [-highestDiff, highestDiff]);
-
-  elevation.value = { array: array.filter((v) => !isNaN(v)), bins };
-
   for (let i = 0; i < array.length; i++) {
     const x = Math.floor(i % width);
     const y = Math.floor(i / width);
@@ -75,5 +77,11 @@ export function createCanvas(
     ctx!.fillStyle = colors[idx];
     ctx!.fillRect(x, height - y, 1, 1);
   }
+
+  const elevationArray = array.filter((v) => !isNaN(v));
+  elevation.value = { array: elevationArray, bins };
+  deltaMass.value = Math.round(elevationArray.reduce((acc, v) => acc + v, 0) * SCALE * SCALE);
+  loadingData.value = false;
+
   return canvas;
 }
