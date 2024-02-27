@@ -117,12 +117,17 @@ export default function App() {
       ) : (
         <>
           {deltaMass.value ? (
-            <p>Overall mass difference: {deltaMass.value > 0 ? "+" : null}{deltaMass.value} m3</p>
+            <p>
+              Overall mass difference: {deltaMass.value > 0 ? "+" : null}
+              {deltaMass.value} m3
+            </p>
           ) : (
-            <p>Calculate elevation difference to see mass displacement results.</p>
+            <p>
+              Calculate elevation difference to see mass displacement results.
+            </p>
           )}
-          <BarChart data={elevation.value} type={"diff"}/>
-          <BarChart data={elevation.value} type={"hist"}/>
+          <BarChart data={elevation.value} type={"diff"} />
+          <BarChart data={elevation.value} type={"hist"} />
         </>
       )}
     </>

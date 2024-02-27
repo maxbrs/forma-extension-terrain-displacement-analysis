@@ -14,7 +14,11 @@ import { cartesian } from "../utils/misc.ts";
 // @ts-ignore
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { rotationMatrixYUpToZUp } from "./Download.tsx";
-import {elevation, inputScale, loadingData} from "../state/application-state.ts";
+import {
+  elevation,
+  inputScale,
+  loadingData,
+} from "../state/application-state.ts";
 
 type Props = {
   oldTerrainUrn: string;

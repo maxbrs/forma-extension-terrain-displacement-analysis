@@ -1,5 +1,5 @@
 import { ResponsiveBar } from "@nivo/bar";
-import {ElevationDataType, inputScale} from "../state/application-state.ts";
+import { ElevationDataType, inputScale } from "../state/application-state.ts";
 import { useMemo } from "preact/hooks";
 import { colors } from "../services/Visualize.ts";
 
@@ -106,12 +106,7 @@ export function BarChart({ data, type }: BarChartProps) {
   return (
     (updatedChartData && (
       <div style={{ height: type === "hist" ? 300 : 200, border: 1 }}>
-        {type === "hist" ? (
-          <h4>Depth distribution</h4>
-        ):(
-          <h4>Mass balance</h4>
-        )
-        }
+        {type === "hist" ? <h4>Depth distribution</h4> : <h4>Mass balance</h4>}
         <ResponsiveBar
           data={updatedChartData}
           keys={[...Array(colors.length).keys()].map(String)}

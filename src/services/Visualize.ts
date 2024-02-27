@@ -1,6 +1,7 @@
 import {
   deltaMass,
-  elevation, inputScale,
+  elevation,
+  inputScale,
   loadingData,
 } from "../state/application-state.ts";
 
@@ -79,7 +80,9 @@ export function createCanvas(
 
   const elevationArray = array.filter((v) => !isNaN(v));
   elevation.value = { array: elevationArray, bins };
-  deltaMass.value = Math.round(elevationArray.reduce((acc, v) => acc + v, 0) * inputScale.value ** 2);
+  deltaMass.value = Math.round(
+    elevationArray.reduce((acc, v) => acc + v, 0) * inputScale.value ** 2,
+  );
   loadingData.value = false;
 
   return canvas;
