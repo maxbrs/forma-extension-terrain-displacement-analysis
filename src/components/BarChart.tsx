@@ -34,12 +34,7 @@ function removeConsecutiveZeros(
 ): { index: string; [key: number]: number }[] {
   let firstNonZero = findNonZero(data, "first");
   let lastNonZero = findNonZero(data, "last");
-
-  if (firstNonZero === -1 && lastNonZero === -1) {
-    return [];
-  } else {
-    return data.slice(firstNonZero, lastNonZero + 1);
-  }
+  return data.slice(firstNonZero, lastNonZero + 1);
 }
 
 function restructureData(

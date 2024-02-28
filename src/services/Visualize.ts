@@ -55,9 +55,10 @@ export function createCanvas(
   canvas.width = width;
   canvas.height = height;
 
-  if (minElevation === maxElevation) {
+  if (minElevation === maxElevation || maxElevation - minElevation < 0.5) {
     // if the min and max elevation are the same, the canvas will be all white
     console.log({ minElevation, maxElevation });
+    loadingData.value = false;
     return canvas;
   }
 

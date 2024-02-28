@@ -68,12 +68,14 @@ async function loadTerrain(terrainUrn: string): Promise<Group | undefined> {
 const TERRAINBUFFER = 10;
 
 async function getSelectedSiteLimits() {
-  const [selectedPaths, siteLimitPaths] = await Promise.all([
+  const [selectedPaths, siteLimitPaths, zonePath] = await Promise.all([
     Forma.selection.getSelection(),
     Forma.geometry.getPathsByCategory({ category: "site_limit" }),
+    Forma.geometry.getPathsByCategory({ category: "zone" }),
   ]);
-  const selectedSiteLimitsPaths = selectedPaths.filter((path) =>
-    siteLimitPaths.includes(path),
+
+  const selectedSiteLimitsPaths = selectedPaths.filter(
+    (path) => siteLimitPaths.includes(path) || zonePath.includes(path),
   );
   if (!selectedSiteLimitsPaths || selectedSiteLimitsPaths.length === 0) {
     return;
@@ -124,6 +126,9 @@ async function computeElevationDiff(
   raycaster.set(origin, direction);
   const oldIntersection = raycaster.intersectObjects(oldMesh.children)[0];
   const newIntersection = raycaster.intersectObjects(newMesh.children)[0];
+  if (!oldIntersection || !newIntersection) {
+    return [`${x}, ${y}`, NaN];
+  }
   return [
     `${x}, ${y}`,
     newIntersection?.point.z - oldIntersection?.point.z - TERRAINBUFFER || NaN,
