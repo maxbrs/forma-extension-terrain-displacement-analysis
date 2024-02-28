@@ -14,8 +14,20 @@ import InputURN from "./components/InputURN.tsx";
 
 export const CANVAS_NAME = "mass displacement";
 
-export default function App() {
+// declare global {
+//   namespace JSX {
+//     interface IntrinsicElements {
+//       "weave-button": JSX.HTMLAttributes<HTMLElement> & {
+//         authContext: string
+//         elementUrnPrefix: string
+//         activeAnalysis: string
+//         typeFilter?: string[]
+//       }
+//     }
+//   }
+// }
 
+export default function App() {
   useEffect(() => {
     getJSONObject("settings").then((res) => {
       if (!res) {

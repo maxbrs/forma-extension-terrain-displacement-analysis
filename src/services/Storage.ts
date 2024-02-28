@@ -42,7 +42,7 @@ export async function saveJSONObject(
   key: string,
   value: { [key: string]: any },
 ) {
-  const proposalId = await Forma.proposal.getId()
+  const proposalId = await Forma.proposal.getId();
   await Forma.extensions.storage.setObject({
     key: `${key}_${proposalId}`,
     data: JSON.stringify(value),
@@ -54,7 +54,7 @@ export async function saveCanvas(
   canvas: HTMLCanvasElement,
   metadata?: { [key: string]: any },
 ) {
-  const proposalId = await Forma.proposal.getId()
+  const proposalId = await Forma.proposal.getId();
   await Forma.extensions.storage.setObject({
     key: `${key}_${proposalId}`,
     data: canvas.toDataURL(),
@@ -67,7 +67,7 @@ export async function saveFloatArray(
   arr: Float32Array,
   metadata?: { [key: string]: any },
 ) {
-  const proposalId = await Forma.proposal.getId()
+  const proposalId = await Forma.proposal.getId();
   await Forma.extensions.storage.setObject({
     key: `${key}_${proposalId}`,
     data: arrayToBuffer(arr),
@@ -76,8 +76,10 @@ export async function saveFloatArray(
 }
 
 export async function getJSONObject(key: string) {
-  const proposalId = await Forma.proposal.getId()
-  const storageObject = await Forma.extensions.storage.getTextObject({ key: `${key}_${proposalId}` });
+  const proposalId = await Forma.proposal.getId();
+  const storageObject = await Forma.extensions.storage.getTextObject({
+    key: `${key}_${proposalId}`,
+  });
   if (!storageObject) {
     return;
   }
@@ -91,8 +93,10 @@ export async function getJSONObject(key: string) {
 }
 
 export async function getCanvasObject(key: string) {
-  const proposalId = await Forma.proposal.getId()
-  const storageObject = await Forma.extensions.storage.getTextObject({ key: `${key}_${proposalId}` });
+  const proposalId = await Forma.proposal.getId();
+  const storageObject = await Forma.extensions.storage.getTextObject({
+    key: `${key}_${proposalId}`,
+  });
   if (!storageObject) {
     return;
   }
@@ -109,8 +113,10 @@ export async function getCanvasObject(key: string) {
 }
 
 export async function getFloat32Array(key: string) {
-  const proposalId = await Forma.proposal.getId()
-  const storageObject = await Forma.extensions.storage.getBinaryObject({ key: `${key}_${proposalId}` });
+  const proposalId = await Forma.proposal.getId();
+  const storageObject = await Forma.extensions.storage.getBinaryObject({
+    key: `${key}_${proposalId}`,
+  });
   if (!storageObject) {
     return;
   }
