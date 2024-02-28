@@ -19,6 +19,7 @@ import {
   inputScale,
   loadingData,
 } from "../state/application-state.ts";
+import {Footprint} from "forma-embedded-view-sdk/geometry";
 
 type Props = {
   oldTerrainUrn: string;
@@ -66,6 +67,39 @@ async function loadTerrain(terrainUrn: string): Promise<Group | undefined> {
 
 const TERRAINBUFFER = 10;
 
+async function getSelectedSiteLimits() {
+  const [selectedPaths, siteLimitPaths] = await Promise.all([Forma.selection.getSelection(), Forma.geometry.getPathsByCategory({ category: "site_limit" })])
+  const selectedSiteLimitsPaths = selectedPaths.filter(path => siteLimitPaths.includes(path))
+  if (!selectedSiteLimitsPaths || selectedSiteLimitsPaths.length === 0) {
+    return;
+  }
+  const fetchPromises: Promise<Footprint | undefined>[] = [];
+  selectedPaths.forEach((path) => {
+    fetchPromises.push(Forma.geometry.getFootprint({ path }));
+  })
+  return await Promise.all(fetchPromises);
+}
+
+function getBoundingBox(newTerrain: Group, selectedSiteLimits: (Footprint | undefined)[] | undefined) {
+  const bBox = new THREE.Box3().setFromObject(newTerrain);
+  if (!selectedSiteLimits || selectedSiteLimits.filter((siteLimit) => siteLimit).length === 0) {
+    return bBox;
+  }
+  let xCoords: number[] = []
+  let yCoords: number[] = []
+  for (const siteLimit of selectedSiteLimits) {
+    if (!siteLimit) continue
+    siteLimit.coordinates.forEach((coord) => {
+      xCoords.push(coord[0]);
+      yCoords.push(coord[1]);
+    });
+  }
+  return new THREE.Box3(
+    new THREE.Vector3(Math.min(...xCoords), Math.min(...yCoords), bBox.min.z),
+    new THREE.Vector3(Math.max(...xCoords), Math.max(...yCoords), bBox.max.z)
+  );
+}
+
 async function computeElevationDiff(
   x: number,
   y: number,
@@ -109,7 +143,10 @@ export default function CalculateAndStore({
       newTerrain.position.z + TERRAINBUFFER,
     );
 
-    const bBox = new THREE.Box3().setFromObject(newTerrain);
+    const selectedSiteLimits = await getSelectedSiteLimits();
+
+    const bBox = getBoundingBox(newTerrain, selectedSiteLimits);
+    // const bBox = new THREE.Box3().setFromObject(newTerrain);
 
     const diffX = Math.floor((bBox.max.x - bBox.min.x) / inputScale.value);
     const diffY = Math.floor((bBox.max.y - bBox.min.y) / inputScale.value);
