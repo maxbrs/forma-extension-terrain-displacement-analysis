@@ -1,41 +1,32 @@
 import { Forma } from "forma-embedded-view-sdk/auto";
-import { useCallback, useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect } from "preact/hooks";
 import CalculateAndStore from "./components/Calculate";
-import { getJSONObject, saveJSONObject } from "./services/Storage.ts";
+import { getJSONObject } from "./services/Storage.ts";
 import { BarChart } from "./components/BarChart.tsx";
 import {
+  DEFAULT_SETTINGS,
   deltaMass,
   elevation,
-  inputScale,
   loadingData,
+  projectSettings,
 } from "./state/application-state.ts";
-
-type Settings = {
-  oldTerrainUrn: string;
-  newTerrainUrn: string;
-};
-
-const DEFAULT_SETTINGS: Settings = {
-  oldTerrainUrn: "",
-  newTerrainUrn: "",
-};
+import InputURN from "./components/InputURN.tsx";
 
 export const CANVAS_NAME = "mass displacement";
 
 export default function App() {
-  const [projectSettings, setProjectSettings] = useState<Settings>();
 
   useEffect(() => {
     getJSONObject("settings").then((res) => {
       if (!res) {
-        setProjectSettings(DEFAULT_SETTINGS);
+        projectSettings.value = DEFAULT_SETTINGS;
         return;
       }
-      setProjectSettings(res.data);
+      projectSettings.value = res.data;
     });
   }, []);
 
-  if (!projectSettings) {
+  if (!projectSettings.value) {
     return <div>loading...</div>;
   }
 
@@ -46,60 +37,23 @@ export default function App() {
     loadingData.value = false;
   }, []);
 
-  const saveSettings = useCallback(async () => {
-    await saveJSONObject("settings", projectSettings);
-  }, [projectSettings]);
+  // const testCode = useCallback(async () => {
+  //   // console.log("Testing code ...");
+  //   const selectedPaths = await Forma.selection.getSelection()
+  //   const buildingPaths = await Forma.geometry.getPathsByCategory({ category: "site_limit" })
+  //   const selectedSiteLimitsPaths = selectedPaths.filter(path => buildingPaths.includes(path))
+  //   console.log("Test ... ", { selectedSiteLimitsPaths, length: selectedSiteLimitsPaths.length });
+  // }, []);
 
   return (
     <>
       <h2 style="margin-top: 15px">Mass Displacement Analysis</h2>
-      <h3>Add URNs of terrains to compare</h3>
-      <div className="section">
-        <p>Initial terrain</p>
-        <input
-          type="string"
-          value={projectSettings.oldTerrainUrn}
-          onChange={(e) =>
-            setProjectSettings({
-              ...projectSettings,
-              oldTerrainUrn: e.currentTarget.value,
-            })
-          }
-        />
-      </div>
-      <div className="section">
-        <p>Alternative terrain</p>
-        <input
-          type="string"
-          value={projectSettings.newTerrainUrn}
-          onChange={(e) =>
-            setProjectSettings({
-              ...projectSettings,
-              newTerrainUrn: e.currentTarget.value,
-            })
-          }
-        />
-      </div>
-      <div className="section">
-        <p>Sampling scale</p>
-        <>
-          <p>{inputScale.value}m</p>
-          <input
-            style={{ width: "50%" }}
-            type="range"
-            min="1"
-            max="10"
-            value={inputScale.value}
-            onChange={(e) => (inputScale.value = Number(e.currentTarget.value))}
-          />
-        </>
-      </div>
-      <button onClick={saveSettings} style="width: 100%">
-        Save inputs
-      </button>
+      {/*<Tabs><Tab><p>hello</p></Tab><Tab><p>This is Tab 2 content</p></Tab></Tabs>*/}
+      <InputURN settings={projectSettings.value}></InputURN>
+      {/*<InputSiteLimit siteLimits={selectedSiteLimits.value}></InputSiteLimit>*/}
       <CalculateAndStore
-        oldTerrainUrn={projectSettings.oldTerrainUrn}
-        newTerrainUrn={projectSettings.newTerrainUrn}
+        oldTerrainUrn={projectSettings.value.oldTerrainUrn}
+        newTerrainUrn={projectSettings.value.newTerrainUrn}
       />
       <button
         onClick={removeTerrainSlope}
@@ -109,8 +63,9 @@ export default function App() {
           elevation.value ? "" : "Click on 'Calculate' first."
         }
       >
-        Remove terrain slope
+        Remove results from terrain
       </button>
+      {/*<button onClick={testCode} style="width: 100%">Test code ...</button>*/}
       <h3>Elevation difference stats</h3>
       {loadingData.value ? (
         <p>Calculations in progress, please wait ...</p>
