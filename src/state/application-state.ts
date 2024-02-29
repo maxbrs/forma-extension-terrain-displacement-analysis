@@ -13,6 +13,7 @@ export const DEFAULT_SETTINGS: Settings = {
 
 export const projectSettings = signal<Settings | undefined>(undefined);
 // export const selectedSiteLimits = signal<string[]>([]);
+// export const useRapidRayCast = signal<boolean>(true);
 export const inputScale = signal<number>(2);
 export const elevation = signal<ElevationDataType | undefined>(undefined);
 export const loadingData = signal<boolean>(false);

@@ -65,7 +65,8 @@ async function loadTerrain(terrainUrn: string): Promise<Group | undefined> {
   return gltf.scene;
 }
 
-const TERRAINBUFFER = 10;
+const TERRAINBUFFER = 50;
+// const RAPIDRAYCASTTHRESHOLD = 250;
 
 async function getSelectedSiteLimits() {
   const [selectedPaths, siteLimitPaths, zonePath] = await Promise.all([
@@ -162,8 +163,9 @@ export default function CalculateAndStore({
     const selectedSiteLimits = await getSelectedSiteLimits();
 
     const bBox = getBoundingBox(newTerrain, selectedSiteLimits);
-    // const bBox = new THREE.Box3().setFromObject(newTerrain);
-
+    // if ((bBox.max.x - bBox.min.x <= RAPIDRAYCASTTHRESHOLD) && (bBox.max.y - bBox.min.y <= RAPIDRAYCASTTHRESHOLD)) {
+    //   useRapidRayCast.value = false;
+    // }
     const diffX = Math.floor((bBox.max.x - bBox.min.x) / inputScale.value);
     const diffY = Math.floor((bBox.max.y - bBox.min.y) / inputScale.value);
     const coordsX = Array.from(
