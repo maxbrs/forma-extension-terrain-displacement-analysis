@@ -3,7 +3,8 @@ import { getJSONObject } from "./services/Storage.ts";
 import {
   DEFAULT_SETTINGS,
   deltaMass,
-  elevation, helpDismissed,
+  elevation,
+  helpDismissed,
   loadingData,
   projectSettings,
 } from "./state/application-state.ts";
@@ -44,12 +45,8 @@ export default function App() {
   return (
     <>
       <h2 style="margin-top: 15px">Mass Displacement Analysis</h2>
-      <InfoBox
-        dismissed={helpDismissed.value}
-      />
-      <AllInputs
-        settings={projectSettings.value}
-      />
+      <InfoBox dismissed={helpDismissed.value} />
+      <AllInputs settings={projectSettings.value} />
       <AllResults
         loading={loadingData.value}
         deltaMass={deltaMass.value}

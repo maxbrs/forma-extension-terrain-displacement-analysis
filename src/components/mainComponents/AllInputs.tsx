@@ -1,9 +1,13 @@
-import InputURN, {Settings} from "../subComponents/InputURN.tsx";
-import {deltaMass, elevation, loadingData} from "../../state/application-state.ts";
+import InputURN, { Settings } from "../subComponents/InputURN.tsx";
+import {
+  deltaMass,
+  elevation,
+  loadingData,
+} from "../../state/application-state.ts";
 import CalculateAndStore from "../subComponents/Calculate.tsx";
-import {Forma} from "forma-embedded-view-sdk/auto";
-import {CANVAS_NAME} from "../../App.tsx";
-import {useCallback} from "preact/hooks";
+import { Forma } from "forma-embedded-view-sdk/auto";
+import { CANVAS_NAME } from "../../App.tsx";
+import { useCallback } from "preact/hooks";
 
 type Props = {
   settings: Settings;

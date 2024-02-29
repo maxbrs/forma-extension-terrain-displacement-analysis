@@ -14,11 +14,11 @@ export function* cartesian<T extends unknown[]>(
 }
 
 export function formatBigNumber(num: number): string {
-  const absNum = Math.abs(num)
+  const absNum = Math.abs(num);
   if (absNum >= 1000000) {
-    return (num / 1000000).toFixed(2) + 'M';
+    return (num / 1000000).toFixed(2) + "M";
   } else if (absNum >= 1000) {
-    return (num / 1000).toFixed(2) + 'K';
+    return (num / 1000).toFixed(2) + "K";
   } else {
     return num.toString();
   }

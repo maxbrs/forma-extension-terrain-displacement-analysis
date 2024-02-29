@@ -1,5 +1,8 @@
 import { ResponsiveBar } from "@nivo/bar";
-import { ElevationDataType, inputScale } from "../../state/application-state.ts";
+import {
+  ElevationDataType,
+  inputScale,
+} from "../../state/application-state.ts";
 import { useMemo } from "preact/hooks";
 import { colors } from "../../services/Visualize.ts";
 
