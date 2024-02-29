@@ -4,13 +4,13 @@ import {
   disposeBoundsTree,
   acceleratedRaycast,
 } from "three-mesh-bvh";
-import { createCanvas } from "../services/Visualize.ts";
+import { createCanvas } from "../../services/Visualize.ts";
 import { useCallback } from "preact/hooks";
 import { Forma } from "forma-embedded-view-sdk/auto";
-import { CANVAS_NAME } from "../App.tsx";
-import { saveCanvas, saveFloatArray } from "../services/Storage.ts";
+import { CANVAS_NAME } from "../../App.tsx";
+import { saveCanvas, saveFloatArray } from "../../services/Storage.ts";
 import { Group, Mesh } from "three";
-import { cartesian } from "../utils/misc.ts";
+import { cartesian } from "../../utils/misc.ts";
 // @ts-ignore
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { rotationMatrixYUpToZUp } from "./Download.tsx";
@@ -18,7 +18,7 @@ import {
   elevation,
   inputScale,
   loadingData,
-} from "../state/application-state.ts";
+} from "../../state/application-state.ts";
 import { Footprint } from "forma-embedded-view-sdk/geometry";
 
 type Props = {
@@ -26,17 +26,17 @@ type Props = {
   newTerrainUrn: string;
 };
 
-// Speed up raycasting using https://github.com/gkjohnson/three-mesh-bvh
-// @ts-ignore
-THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
-// @ts-ignore
-THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
-// @ts-ignore
-THREE.Mesh.prototype.raycast = acceleratedRaycast;
-const raycaster = new THREE.Raycaster();
-// For this analysis we only need the first hit, which is faster to compute
-// @ts-ignore
-raycaster.firstHitOnly = true;
+// // Speed up raycasting using https://github.com/gkjohnson/three-mesh-bvh
+// // @ts-ignore
+// THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+// // @ts-ignore
+// THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+// // @ts-ignore
+// THREE.Mesh.prototype.raycast = acceleratedRaycast;
+// const raycaster = new THREE.Raycaster();
+// // For this analysis we only need the first hit, which is faster to compute
+// // @ts-ignore
+// raycaster.firstHitOnly = true;
 
 async function loadTerrain(terrainUrn: string): Promise<Group | undefined> {
   const { element } = await Forma.elements.get({ urn: terrainUrn });

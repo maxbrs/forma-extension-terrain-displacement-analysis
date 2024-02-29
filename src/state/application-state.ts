@@ -1,5 +1,5 @@
 import { signal } from "@preact/signals";
-import { Settings } from "../components/InputURN.tsx";
+import { Settings } from "../components/subComponents/InputURN.tsx";
 
 export type ElevationDataType = {
   array: Float32Array;

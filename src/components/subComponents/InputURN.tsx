@@ -1,5 +1,5 @@
-import { inputScale, projectSettings } from "../state/application-state.ts";
-import { saveJSONObject } from "../services/Storage.ts";
+import { inputScale, projectSettings } from "../../state/application-state.ts";
+import { saveJSONObject } from "../../services/Storage.ts";
 import { useCallback } from "preact/hooks";
 
 export type Settings = {
@@ -53,7 +53,7 @@ export default function InputURN({ settings }: Props) {
             style={{ width: "50%" }}
             type="range"
             min="1"
-            max="10"
+            max="5"
             value={inputScale.value}
             onChange={(e) => (inputScale.value = Number(e.currentTarget.value))}
           />
