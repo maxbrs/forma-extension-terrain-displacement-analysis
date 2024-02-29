@@ -1,15 +1,13 @@
 import ResultsLoading from "../subComponents/ResultsLoading.tsx";
 import { BarChart } from "../subComponents/BarChart.tsx";
-import { ElevationDataType } from "../../state/application-state.ts";
+import { deltaMass, elevation } from "../../state/application-state.ts";
 import { formatBigNumber } from "../../utils/misc.ts";
 
 type Props = {
   loading: boolean;
-  deltaMass: number | undefined;
-  elevation: ElevationDataType | undefined;
 };
 
-export default function AllResults({ loading, deltaMass, elevation }: Props) {
+export default function AllResults({ loading }: Props) {
   return (
     <>
       <h3>Elevation difference stats</h3>
@@ -17,13 +15,13 @@ export default function AllResults({ loading, deltaMass, elevation }: Props) {
         <ResultsLoading />
       ) : (
         <>
-          {deltaMass ? (
+          {deltaMass.value ? (
             <p style="font-size: 1.15em">
               Mass difference:
               <b>
                 {" "}
-                {deltaMass > 0 ? "+" : null}
-                {formatBigNumber(deltaMass)}
+                {deltaMass.value > 0 ? "+" : null}
+                {formatBigNumber(deltaMass.value)}
               </b>{" "}
               m3
             </p>
@@ -32,8 +30,8 @@ export default function AllResults({ loading, deltaMass, elevation }: Props) {
               Calculate elevation difference to see mass displacement results.
             </p>
           )}
-          <BarChart data={elevation} type={"diff"} />
-          <BarChart data={elevation} type={"hist"} />
+          <BarChart data={elevation.value} type={"diff"} />
+          <BarChart data={elevation.value} type={"hist"} />
         </>
       )}
     </>

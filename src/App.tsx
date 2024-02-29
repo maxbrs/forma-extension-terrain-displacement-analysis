@@ -2,8 +2,6 @@ import { useEffect } from "preact/hooks";
 import { getJSONObject } from "./services/Storage.ts";
 import {
   DEFAULT_SETTINGS,
-  deltaMass,
-  elevation,
   helpDismissed,
   loadingData,
   projectSettings,
@@ -47,11 +45,7 @@ export default function App() {
       <h2 style="margin-top: 15px">Mass Displacement Analysis</h2>
       <InfoBox dismissed={helpDismissed.value} />
       <AllInputs settings={projectSettings.value} />
-      <AllResults
-        loading={loadingData.value}
-        deltaMass={deltaMass.value}
-        elevation={elevation.value}
-      />
+      <AllResults loading={loadingData.value} />
     </>
   );
 }
