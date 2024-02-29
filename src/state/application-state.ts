@@ -12,6 +12,7 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export const projectSettings = signal<Settings | undefined>(undefined);
+export const helpDismissed = signal<boolean>(false);
 // export const selectedSiteLimits = signal<string[]>([]);
 // export const useRapidRayCast = signal<boolean>(true);
 export const inputScale = signal<number>(2);

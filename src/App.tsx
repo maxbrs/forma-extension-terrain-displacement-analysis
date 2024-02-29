@@ -3,12 +3,13 @@ import { getJSONObject } from "./services/Storage.ts";
 import {
   DEFAULT_SETTINGS,
   deltaMass,
-  elevation,
+  elevation, helpDismissed,
   loadingData,
   projectSettings,
 } from "./state/application-state.ts";
 import AllInputs from "./components/mainComponents/AllInputs.tsx";
 import AllResults from "./components/mainComponents/AllResults.tsx";
+import InfoBox from "./components/subComponents/InfoBox.tsx";
 
 export const CANVAS_NAME = "mass displacement";
 
@@ -43,6 +44,9 @@ export default function App() {
   return (
     <>
       <h2 style="margin-top: 15px">Mass Displacement Analysis</h2>
+      <InfoBox
+        dismissed={helpDismissed.value}
+      />
       <AllInputs
         settings={projectSettings.value}
       />
