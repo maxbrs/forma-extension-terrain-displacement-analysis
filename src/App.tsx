@@ -11,6 +11,7 @@ import AllResults from "./components/mainComponents/AllResults.tsx";
 import InfoBox from "./components/subComponents/InfoBox.tsx";
 
 export const CANVAS_NAME = "mass displacement";
+export const SESSION_STORAGE_PREFIX = "extension-MDA";
 
 // declare global {
 //   namespace JSX {
