@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "prettier:write": "prettier --write src"
+    "prettier:write": "prettier --write src",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@nivo/bar": "^0.83.0",
