@@ -2,6 +2,7 @@
   "name": "terrain-steepness",
   "description": "Parking demand calculation plug-in for Autodesk Forma",
   "private": true,
+  "homepage" : "https://maxbrs.github.io/forma-extension-terrain-displacement-analysis/",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
