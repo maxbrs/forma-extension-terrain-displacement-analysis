@@ -1,8 +1,9 @@
-import InputURN, { Settings } from "../subComponents/InputURN.tsx";
+import InputURN from "../subComponents/InputURN.tsx";
 import {
   deltaMass,
   elevation,
   loadingData,
+  Settings,
 } from "../../state/application-state.ts";
 import CalculateAndStore from "../subComponents/Calculate.tsx";
 import { Forma } from "forma-embedded-view-sdk/auto";
@@ -34,10 +35,7 @@ export default function AllInputs({ settings }: Props) {
       {/*<Tabs><Tab><p>hello</p></Tab><Tab><p>This is Tab 2 content</p></Tab></Tabs>*/}
       <InputURN settings={settings}></InputURN>
       {/*<InputSiteLimit siteLimits={selectedSiteLimits.value}></InputSiteLimit>*/}
-      <CalculateAndStore
-        oldTerrainUrn={settings.oldTerrainUrn}
-        newTerrainUrn={undefined}
-      />
+      <CalculateAndStore otherTerrainUrn={settings.otherTerrainUrn} />
       <button
         onClick={removeTerrainSlope}
         style="width: 100%"

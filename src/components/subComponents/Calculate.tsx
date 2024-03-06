@@ -18,12 +18,12 @@ import {
   elevation,
   inputScale,
   loadingData,
+  TERRAIN_BUFFER,
 } from "../../state/application-state.ts";
 import { Footprint } from "forma-embedded-view-sdk/geometry";
 
 type Props = {
-  oldTerrainUrn: string;
-  newTerrainUrn: string | undefined;
+  otherTerrainUrn: string;
 };
 
 async function getTerrainUrn() {
@@ -77,9 +77,6 @@ async function loadTerrain(
   });
   return gltf.scene;
 }
-
-const TERRAINBUFFER = 50;
-// const RAPIDRAYCASTTHRESHOLD = 250;
 
 async function getSelectedSiteLimits() {
   const [selectedPaths, siteLimitPaths, zonePath] = await Promise.all([
@@ -145,19 +142,16 @@ async function computeElevationDiff(
   }
   return [
     `${x}, ${y}`,
-    newIntersection?.point.z - oldIntersection?.point.z - TERRAINBUFFER || NaN,
+    newIntersection?.point.z - oldIntersection?.point.z - TERRAIN_BUFFER || NaN,
   ];
 }
 
-export default function CalculateAndStore({
-  oldTerrainUrn,
-  newTerrainUrn,
-}: Props) {
+export default function CalculateAndStore({ otherTerrainUrn }: Props) {
   const calculateTerrainDifference = useCallback(async () => {
     loadingData.value = true;
     const [newTerrain, oldTerrain] = await Promise.all([
       loadTerrain(undefined),
-      loadTerrain(oldTerrainUrn),
+      loadTerrain(otherTerrainUrn),
     ]);
     if (!oldTerrain || !newTerrain) {
       console.error("Failed to load terrain");
@@ -170,7 +164,7 @@ export default function CalculateAndStore({
     newTerrain.position.set(
       newTerrain.position.x,
       newTerrain.position.y,
-      newTerrain.position.z + TERRAINBUFFER,
+      newTerrain.position.z + TERRAIN_BUFFER,
     );
 
     const selectedSiteLimits = await getSelectedSiteLimits();
@@ -264,7 +258,7 @@ export default function CalculateAndStore({
       minY: bBox.min.y,
       maxY: bBox.max.y,
     });
-  }, [oldTerrainUrn, newTerrainUrn]);
+  }, [otherTerrainUrn]);
 
   return (
     <button

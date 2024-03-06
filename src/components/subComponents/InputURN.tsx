@@ -1,11 +1,11 @@
-import { inputScale, projectSettings } from "../../state/application-state.ts";
+import {
+  EXTENSION_KEY,
+  inputScale,
+  projectSettings,
+  Settings,
+} from "../../state/application-state.ts";
 import { saveJSONObject } from "../../services/Storage.ts";
 import { useCallback } from "preact/hooks";
-
-export type Settings = {
-  oldTerrainUrn: string;
-  newTerrainUrn: string | undefined;
-};
 
 type Props = {
   settings: Settings;
@@ -13,23 +13,23 @@ type Props = {
 
 export default function InputURN({ settings }: Props) {
   const saveSettings = useCallback(async () => {
-    await saveJSONObject("settings", settings);
+    await saveJSONObject(`${EXTENSION_KEY}/settings`, settings);
   }, [settings]);
 
   return (
     <>
       <h3>Add URNs of terrains to compare</h3>
       <div className="section">
-        <p>Alternative propoasal</p>
+        <p>Alternative terrain</p>
         <input
           style={{ fontSize: "10px" }}
           type="string"
-          placeholder="other proposal URL"
-          value={settings.oldTerrainUrn ?? settings.oldTerrainUrn}
+          placeholder="proposal URN"
+          value={settings.otherTerrainUrn}
           onChange={(e) =>
             (projectSettings.value = {
               ...settings,
-              oldTerrainUrn: e.currentTarget.value,
+              otherTerrainUrn: e.currentTarget.value,
             })
           }
         />
