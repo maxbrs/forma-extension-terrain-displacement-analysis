@@ -11,6 +11,7 @@ export const DEFAULT_SETTINGS: Settings = {
   newTerrainUrn: "",
 };
 
+export const initialized = signal<boolean>(false);
 export const projectSettings = signal<Settings | undefined>(undefined);
 export const helpDismissed = signal<boolean>(false);
 // export const selectedSiteLimits = signal<string[]>([]);
