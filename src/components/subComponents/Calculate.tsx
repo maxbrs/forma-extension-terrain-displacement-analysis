@@ -23,23 +23,36 @@ import { Footprint } from "forma-embedded-view-sdk/geometry";
 
 type Props = {
   oldTerrainUrn: string;
-  newTerrainUrn: string;
+  newTerrainUrn: string | undefined;
 };
 
-// // Speed up raycasting using https://github.com/gkjohnson/three-mesh-bvh
-// // @ts-ignore
-// THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
-// // @ts-ignore
-// THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
-// // @ts-ignore
-// THREE.Mesh.prototype.raycast = acceleratedRaycast;
-// const raycaster = new THREE.Raycaster();
-// // For this analysis we only need the first hit, which is faster to compute
-// // @ts-ignore
-// raycaster.firstHitOnly = true;
+async function getTerrainUrn() {
+  const terrainUrns = await Forma.geometry.getPathsByCategory({
+    category: "terrain",
+  });
+  if (!terrainUrns || terrainUrns.length === 0) {
+    console.error("No terrain found");
+    loadingData.value = false;
+    throw new Error("No terrain found");
+  }
+  return terrainUrns[0];
+}
 
-async function loadTerrain(terrainUrn: string): Promise<Group | undefined> {
-  const { element } = await Forma.elements.get({ urn: terrainUrn });
+async function getTerrainElement(urn: string | undefined) {
+  if (!urn) {
+    const path = await getTerrainUrn();
+    const result = await Forma.elements.getByPath({ path });
+    return result.element;
+  } else {
+    const result = await Forma.elements.get({ urn });
+    return result.element;
+  }
+}
+
+async function loadTerrain(
+  terrainUrn: string | undefined,
+): Promise<Group | undefined> {
+  const element = await getTerrainElement(terrainUrn);
   const volume = await Forma.elements.representations.volumeMesh(element);
   const loader = new GLTFLoader();
   const gltf = await loader.parseAsync(volume?.data, "");
@@ -143,7 +156,7 @@ export default function CalculateAndStore({
   const calculateTerrainDifference = useCallback(async () => {
     loadingData.value = true;
     const [newTerrain, oldTerrain] = await Promise.all([
-      loadTerrain(newTerrainUrn),
+      loadTerrain(undefined),
       loadTerrain(oldTerrainUrn),
     ]);
     if (!oldTerrain || !newTerrain) {

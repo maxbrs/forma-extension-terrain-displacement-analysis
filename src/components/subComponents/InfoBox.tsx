@@ -1,6 +1,6 @@
-import {useCallback, useEffect} from "preact/hooks";
+import { useCallback, useEffect } from "preact/hooks";
 import { helpDismissed } from "../../state/application-state.ts";
-import {SESSION_STORAGE_PREFIX} from "../../App.tsx";
+import { SESSION_STORAGE_PREFIX } from "../../App.tsx";
 
 type Props = {
   dismissed: boolean;
@@ -9,12 +9,15 @@ type Props = {
 export default function InfoBox({ dismissed }: Props) {
   useEffect(() => {
     helpDismissed.value = !!sessionStorage.getItem(
-      `${SESSION_STORAGE_PREFIX}-help-info-dismissed`
+      `${SESSION_STORAGE_PREFIX}-help-info-dismissed`,
     );
   }, []);
 
   const setDismissed = useCallback(() => {
-    sessionStorage.setItem(`${SESSION_STORAGE_PREFIX}-help-info-dismissed`, "true");
+    sessionStorage.setItem(
+      `${SESSION_STORAGE_PREFIX}-help-info-dismissed`,
+      "true",
+    );
     helpDismissed.value = true;
   }, []);
 

@@ -36,7 +36,7 @@ export default function AllInputs({ settings }: Props) {
       {/*<InputSiteLimit siteLimits={selectedSiteLimits.value}></InputSiteLimit>*/}
       <CalculateAndStore
         oldTerrainUrn={settings.oldTerrainUrn}
-        newTerrainUrn={settings.newTerrainUrn}
+        newTerrainUrn={undefined}
       />
       <button
         onClick={removeTerrainSlope}

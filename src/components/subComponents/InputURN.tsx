@@ -4,7 +4,7 @@ import { useCallback } from "preact/hooks";
 
 export type Settings = {
   oldTerrainUrn: string;
-  newTerrainUrn: string;
+  newTerrainUrn: string | undefined;
 };
 
 type Props = {
@@ -20,27 +20,16 @@ export default function InputURN({ settings }: Props) {
     <>
       <h3>Add URNs of terrains to compare</h3>
       <div className="section">
-        <p>Initial terrain</p>
+        <p>Alternative propoasal</p>
         <input
+          style={{ fontSize: "10px" }}
           type="string"
-          value={settings.oldTerrainUrn}
+          placeholder="other proposal URL"
+          value={settings.oldTerrainUrn ?? settings.oldTerrainUrn}
           onChange={(e) =>
             (projectSettings.value = {
               ...settings,
               oldTerrainUrn: e.currentTarget.value,
-            })
-          }
-        />
-      </div>
-      <div className="section">
-        <p>Alternative terrain</p>
-        <input
-          type="string"
-          value={projectSettings.value?.newTerrainUrn}
-          onChange={(e) =>
-            (projectSettings.value = {
-              ...settings,
-              newTerrainUrn: e.currentTarget.value,
             })
           }
         />
