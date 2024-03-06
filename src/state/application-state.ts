@@ -17,6 +17,7 @@ export const DEFAULT_SETTINGS: Settings = {
   otherTerrainUrn: "",
 };
 export const TERRAIN_BUFFER = 50;
+export const TERRAIN_DIFF_THRESHOLD = 0.1;
 // const RAPID_RAYCAST_THRESHOLD = 250;
 
 export const initialized = signal<boolean>(false);
@@ -26,5 +27,6 @@ export const helpDismissed = signal<boolean>(false);
 // export const useRapidRayCast = signal<boolean>(true);
 export const inputScale = signal<number>(2);
 export const elevation = signal<ElevationDataType | undefined>(undefined);
+export const identicalTerrains = signal<boolean>(false);
 export const loadingData = signal<boolean>(false);
 export const deltaMass = signal<number | undefined>(undefined);

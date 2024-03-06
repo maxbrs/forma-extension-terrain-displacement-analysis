@@ -4,7 +4,10 @@ import {
   disposeBoundsTree,
   acceleratedRaycast,
 } from "three-mesh-bvh";
-import { createCanvas } from "../../services/Visualize.ts";
+import {
+  createCanvas,
+  initializeBlankCanvas,
+} from "../../services/Visualize.ts";
 import { useCallback } from "preact/hooks";
 import { Forma } from "forma-embedded-view-sdk/auto";
 import { CANVAS_NAME } from "../../App.tsx";
@@ -15,10 +18,13 @@ import { cartesian } from "../../utils/misc.ts";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { rotationMatrixYUpToZUp } from "./Download.tsx";
 import {
+  deltaMass,
   elevation,
+  identicalTerrains,
   inputScale,
   loadingData,
   TERRAIN_BUFFER,
+  TERRAIN_DIFF_THRESHOLD,
 } from "../../state/application-state.ts";
 import { Footprint } from "forma-embedded-view-sdk/geometry";
 
@@ -146,17 +152,27 @@ async function computeElevationDiff(
   ];
 }
 
+function sameTerrains() {
+  console.log("Both terrains are identical");
+  identicalTerrains.value = true;
+  elevation.value = undefined;
+  deltaMass.value = undefined;
+  loadingData.value = false;
+}
+
 export default function CalculateAndStore({ otherTerrainUrn }: Props) {
   const calculateTerrainDifference = useCallback(async () => {
     loadingData.value = true;
+    identicalTerrains.value = false;
     const [newTerrain, oldTerrain] = await Promise.all([
       loadTerrain(undefined),
       loadTerrain(otherTerrainUrn),
     ]);
-    if (!oldTerrain || !newTerrain) {
+    if (!newTerrain || !oldTerrain) {
       console.error("Failed to load terrain");
-      loadingData.value = false;
       elevation.value = undefined;
+      deltaMass.value = undefined;
+      loadingData.value = false;
       return;
     }
 
@@ -184,14 +200,6 @@ export default function CalculateAndStore({ otherTerrainUrn }: Props) {
       (_, i) => bBox.min.y + i * inputScale.value,
     );
 
-    if (newTerrain.children === oldTerrain.children) {
-      console.log(
-        "The meshes are identical, no need to compute elevation diff",
-      );
-      loadingData.value = false;
-      elevation.value = undefined;
-      return;
-    }
     console.log("start computing elevation diff");
     const fetchPromises = [];
     for (const [x, y] of cartesian(coordsX, coordsY)) {
@@ -220,13 +228,17 @@ export default function CalculateAndStore({ otherTerrainUrn }: Props) {
       }
     }
 
-    const canvas = createCanvas(
-      elevationDiff,
-      diffX,
-      diffY,
-      minElevation,
-      maxElevation,
-    );
+    // verify if all delta values are != 0 (given a buffer)
+    const isSameTerrain =
+      minElevation === maxElevation ||
+      maxElevation - minElevation < TERRAIN_DIFF_THRESHOLD;
+    if (isSameTerrain) {
+      sameTerrains();
+    }
+
+    const canvas = isSameTerrain
+      ? initializeBlankCanvas()
+      : createCanvas(elevationDiff, diffX, diffY, minElevation, maxElevation);
 
     // need to find the reference point of the terrain to place the canvas
     // for this analysis, it's the middle of the terrain

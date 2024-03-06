@@ -1,6 +1,10 @@
 import ResultsLoading from "../subComponents/ResultsLoading.tsx";
 import { BarChart } from "../subComponents/BarChart.tsx";
-import { deltaMass, elevation } from "../../state/application-state.ts";
+import {
+  deltaMass,
+  elevation,
+  identicalTerrains,
+} from "../../state/application-state.ts";
 import { formatBigNumber } from "../../utils/misc.ts";
 
 type Props = {
@@ -26,9 +30,17 @@ export default function AllResults({ loading }: Props) {
               m3
             </p>
           ) : (
-            <p>
-              Calculate elevation difference to see mass displacement results.
-            </p>
+            <>
+              {identicalTerrains.value ? (
+                <div className="alert alert-warning">
+                  <strong>Warning!</strong> The terrains are identical. No mass
+                  displacement.
+                </div>
+              ) : null}
+              <p>
+                Calculate elevation difference to see mass displacement results.
+              </p>
+            </>
           )}
           <BarChart data={elevation.value} type={"diff"} />
           <BarChart data={elevation.value} type={"hist"} />

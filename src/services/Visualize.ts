@@ -44,6 +44,10 @@ function findIndexFromBin(value: number, bins: number[][]): number {
   return bins.findIndex(([min, max]) => min <= value && value < max);
 }
 
+export function initializeBlankCanvas(): HTMLCanvasElement {
+  return document.createElement("canvas");
+}
+
 export function createCanvas(
   array: Float32Array,
   width: number,
@@ -51,14 +55,12 @@ export function createCanvas(
   minElevation: number,
   maxElevation: number,
 ): HTMLCanvasElement {
-  const canvas = document.createElement("canvas");
+  const canvas = initializeBlankCanvas();
   canvas.width = width;
   canvas.height = height;
 
   if (minElevation === maxElevation || maxElevation - minElevation < 0.5) {
     // if the min and max elevation are the same, the canvas will be all white
-    console.log({ minElevation, maxElevation });
-    loadingData.value = false;
     return canvas;
   }
 
