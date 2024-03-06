@@ -4,6 +4,7 @@ import {
   DEFAULT_SETTINGS,
   deltaMass,
   elevation,
+  EXTENSION_KEY,
   helpDismissed,
   initialized,
   loadingData,
@@ -47,7 +48,7 @@ export default function App() {
     elevation.value = undefined;
     deltaMass.value = undefined;
     loadingData.value = false;
-    getJSONObject("settings").then((res) => {
+    getJSONObject(`${EXTENSION_KEY}/settings`).then((res) => {
       if (!res) {
         projectSettings.value = DEFAULT_SETTINGS;
         return;
